@@ -15,13 +15,12 @@ const { error } = require('console');
 let store=MongoStore.create({
     secret:'abhay',
     mongoUrl: process.env.MONGOURL,
-    touchAfter:24*3600
+    touchAfter:36*2400
 })
 app.set('view engine', 'ejs');
 engine = require('ejs-mate'),
 app.use(express.urlencoded({ extended: true })); // Add this line for JSON body parsing
 app.use(session({
-    store,
     secret: 'your-secret-key', // Replace with a secure key for production
     resave: false,
     saveUninitialized: true,
@@ -63,6 +62,9 @@ next()
 app.use((req,res,next)=>{
     res.locals.users=req.user
     next()
+})
+app.get("/",(req,res)=>{
+res.redirect("/home")
 })
 app.get("/register",async(req,res)=>{
    res.render("pages/register.ejs")
