@@ -1,0 +1,28 @@
+<% layout('boilerplate') -%>
+<%=carts%>
+<!-- <div class="container">
+  <h2>My Orders</h2>
+
+  <% for (let i = 0; i < carts.length; i++) { %>
+    <div class="cart">
+      <h3>Cart <%= i + 1 %> (Total: <%= carts[i].total %>)</h3>
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        <% for (let j = 0; j < carts[i].items.length; j++) { %>
+          <div class="col">
+            <div class="card h-100">
+              <img src="<%= carts[i].items[j].productId %>" class="card-img-top" alt="Product Image">
+              <div class="card-body">
+                <h5 class="card-title">Product ID: <%= carts[i].items[j].productId %></h5>
+                <p class="card-text">Quantity: <%= carts[i].items[j].quantity %></p>
+                <p class="card-text">Price: $<%= carts[i].items[j].price %></p>
+                
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </div>
+     
+    </div>
+    <hr>
+  <% } %>
+</div> -->

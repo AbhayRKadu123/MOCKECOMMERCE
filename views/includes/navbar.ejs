@@ -1,0 +1,56 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <!-- Logo or Brand Name -->
+    <a class="navbar-brand" href="/">E-Shop</a>
+    
+    <!-- Toggler for mobile view -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <!-- Navbar Links -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/viewcart">
+            <i class="fas fa-shopping-cart"></i> Cart
+          </a>
+        </li>
+        
+        <% if (typeof users != 'undefined') { %>
+          <!-- Your Orders Button (Visible Only When Logged In) -->
+          <li class="nav-item">
+            <a class="nav-link" href="/myorders">
+              <i class="fas fa-box"></i> Your Orders
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/login">
+              <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/register">
+              <i class="fas fa-user-plus"></i> Register
+            </a>
+          </li>
+        <% } %>
+      </ul>
+      
+      <!-- Search Form -->
+      <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search products..." aria-label="Search">
+        <button class="btn btn-outline-primary" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+</nav>

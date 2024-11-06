@@ -1,0 +1,42 @@
+<% layout('boilerplate') -%>
+<h1 class="text-center my-4">Product Detail</h1>
+
+<div class="card text-center" style="max-width: 60vw; margin: auto;">
+    <div class="row g-0">
+        <div class="col-md-6">
+            <!-- Product Image -->
+            <img src="<%= data.image %>" class="img-fluid rounded-start" alt="<%= data.title %>">
+        </div>
+        <div class="col-md-6">
+            <div class="card-body d-flex flex-column justify-content-between">
+                <!-- Product Title -->
+                <h5 class="card-title mb-3"><%= data.title %></h5>
+
+                <!-- Product Description -->
+                <p class="card-text mb-3"><%= data.description %></p>
+
+                <!-- Product Category -->
+                <p class="card-text text-muted"><small>Category: <%= data.category %></small></p>
+
+                <!-- Product Rating -->
+                <div class="d-flex align-items-center">
+                    <span class="text-warning">
+                        <%= '★'.repeat(Math.floor(data.rating.rate)) %>
+                        <%= '☆'.repeat(5 - Math.floor(data.rating.rate)) %>
+                    </span>
+                    <span class="ms-2">(<%= data.rating.count %> reviews)</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <!-- Product Price -->
+                    <span class="text-success fs-4 fw-bold">$<%= data.price.toFixed(2) %></span>
+
+                    <!-- Add to Cart Button -->
+                    <form method="post" action="/addtocart?productId=<%= data.id %>&quantity=1&price=<%= data.price %>">
+                        <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
