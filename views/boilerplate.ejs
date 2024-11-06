@@ -18,11 +18,19 @@
 
     <!-- Flash Messages -->
     <% if (flashmsg && flashmsg.length>0) { %>
-      <div class="alert alert-success text-center" role="alert">
-        <%= flashmsg %>
+      
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong><%=flashmsg%></strong> 
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     <% } %>
-
+    <% if (errmsg && errmsg.length>0) { %>
+      
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong><%=errmsg%></strong> 
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
     <!-- Category Links as Buttons -->
     <div class="container my-4">
       <div class="d-flex justify-content-center mb-3">

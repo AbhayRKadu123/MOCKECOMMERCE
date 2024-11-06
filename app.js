@@ -7,11 +7,13 @@ const passport=require('passport')
 const localstrategy= require('passport-local').Strategy;
 const User=require("./model/user")
 const NewOrder=require("./model/order")
+const ExpressError=require("./ExpressError")
 var flash = require('connect-flash');
 const MongoStore = require('connect-mongo');
 require('dotenv').config();
 
 const { error } = require('console');
+const { wrap } = require('module');
 let store=MongoStore.create({
     secret:'abhay',
     mongoUrl: process.env.MONGOURL,
@@ -54,8 +56,10 @@ function isAuthenticated(req, res, next) {
     }
     res.redirect('/login');
 }
+
 app.use((req,res,next)=>{
 res.locals.flashmsg= req.flash('info')
+res.locals.errmsg=req.flash('errmsg')
 next()
 })
 
@@ -63,21 +67,30 @@ app.use((req,res,next)=>{
     res.locals.users=req.user
     next()
 })
+function WrapAsync(fn) {
+    return (req, res, next) => {
+        fn(req, res, next).catch((err) => {
+            let { status = 500, message = "something went wrong" } = err;
+
+            return next(new ExpressError(status, message))
+        })
+    }
+
+}
 app.get("/",(req,res)=>{
 res.redirect("/home")
 })
 app.get("/register",async(req,res)=>{
    res.render("pages/register.ejs")
 })
-app.post("/register",async(req,res)=>{
-    
+app.post("/register",WrapAsync(async(req,res)=>{
     let {email,Username,password}=req.body;
     let newuser=new User({email:email,username:Username})
     let registeruser=await User.register(newuser,password)
     req.flash('info', 'User registered successfully!')
 
     res.redirect("/login")
-})
+}))
 app.get("/login",(req,res)=>{
     res.render("pages/login.ejs")
 })
@@ -103,7 +116,7 @@ app.get('/logout', (req, res) => {
     });
 });
 
-app.get("/home",isAuthenticated,async(req,res)=>{
+app.get("/home",isAuthenticated,WrapAsync(async(req,res)=>{
     let {category}=req.query;
     console.log(category)
     let data;
@@ -119,16 +132,16 @@ console.log(data)
     
         res.render('pages/home.ejs',{data})
   
-})
-app.get("/detail/:id",isAuthenticated,async(req,res)=>{
+}))
+app.get("/detail/:id",isAuthenticated,WrapAsync(async(req,res)=>{
     let {id}=req.params;
 let data=await fetch(`https://fakestoreapi.com/products/${id}`);
     data= await data.json();
 //   res.send(data)
     res.render('pages/viewdetail.ejs',{data})
-})
+}))
 
-app.get("/viewcart",isAuthenticated,async(req,res)=>{
+app.get("/viewcart",isAuthenticated,WrapAsync(async(req,res)=>{
     try{
         if(req.session.cart){
             let data=[]
@@ -148,8 +161,8 @@ app.get("/viewcart",isAuthenticated,async(req,res)=>{
         throw new expressError(err);
     }
    
-})
-app.post("/addtocart",isAuthenticated,async(req,res)=>{
+}))
+app.post("/addtocart",isAuthenticated,WrapAsync(async(req,res)=>{
  let {productId, quantity, price}=req.query;
  if(!req.session.cart){
    
@@ -175,8 +188,8 @@ app.post("/addtocart",isAuthenticated,async(req,res)=>{
 
  res.redirect('/viewcart')
  
-})
-app.get("/removefromcart/:id",isAuthenticated,(req,res)=>{
+}))
+app.get("/removefromcart/:id",isAuthenticated,WrapAsync(async(req,res)=>{
 let {id}=req.params;
 let ind=0;
 
@@ -188,22 +201,24 @@ let ind=0;
 req.session.cart.total=req.session.cart.total-(Number(req.session.cart.items[ind].price)*Number(req.session.cart.items[ind].quantity))
 req.session.cart.items.splice(ind,1);
 if(req.session.cart.total==0){
-    req.session.destroy()
+    req.session.cart=null;
 }
 req.flash('info', 'item removed!')
 
 res.redirect('/viewcart')
-})
+}))
 app.get("/checkout",isAuthenticated,(req,res)=>{
     
     res.render("pages/checkoutpage.ejs")
 })
-app.get("/myorders",isAuthenticated,async(req,res)=>{
+app.get("/myorders",isAuthenticated,WrapAsync(async(req,res)=>{
     let carts=await Cart.find({owner:req.user._id})
     // console.log(items)
-    res.render("pages/myorder.ejs",{carts})
-})
-app.get("/process-payment",isAuthenticated,async(req,res)=>{
+    // res.render("pages/myorder.ejs",{carts})
+    req.flash('info','this function is under development stage')
+    res.redirect("/home")
+}))
+app.get("/process-payment",isAuthenticated,WrapAsync(async(req,res)=>{
    setTimeout(async()=>{const isPaymentSuccessful = Math.random() > 0.2; // Simulated success rate
 
     if (isPaymentSuccessful) {
@@ -220,13 +235,15 @@ app.get("/process-payment",isAuthenticated,async(req,res)=>{
     
     
 })
+)
 
+
+app.use((req,res)=>{
+   throw new ExpressError(404,"page not found")
+})
 
 app.use((err,req,res,next)=>{
-    res.send('something went wrong')
-    next()
+    req.flash('errmsg',err.message)
+    res.redirect("/home")
+    
 })
-app.use((req,res)=>{
-    res.send("page not found")
-})
-
