@@ -78,7 +78,7 @@ function WrapAsync(fn) {
 
 }
 app.get("/",(req,res)=>{
-res.redirect("/home")
+    res.render("pages/login.ejs")
 })
 app.get("/register",async(req,res)=>{
    res.render("pages/register.ejs")
